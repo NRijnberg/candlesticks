@@ -1,9 +1,11 @@
 import 'dart:convert';
+
+import 'package:candlesticks/candlesticks.dart';
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import './candle_ticker_model.dart';
 import './repository.dart';
-import 'package:flutter/material.dart';
-import 'package:candlesticks/candlesticks.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -96,11 +98,9 @@ class _MyAppState extends State<MyApp> {
 
     try {
       // load candles info
-      final data =
-          await repository.fetchCandles(symbol: symbol, interval: interval);
+      final data = await repository.fetchCandles(symbol: symbol, interval: interval);
       // connect to binance stream
-      _channel =
-          repository.establishConnection(symbol.toLowerCase(), currentInterval);
+      _channel = repository.establishConnection(symbol.toLowerCase(), currentInterval);
       // update candles
       setState(() {
         candles = data;
@@ -121,15 +121,13 @@ class _MyAppState extends State<MyApp> {
         final candleTicker = CandleTickerModel.fromJson(map);
 
         // cehck if incoming candle is an update on current last candle, or a new one
-        if (candles[0].date == candleTicker.candle.date &&
-            candles[0].open == candleTicker.candle.open) {
+        if (candles[0].date == candleTicker.candle.date && candles[0].open == candleTicker.candle.open) {
           // update last candle
           candles[0] = candleTicker.candle;
         }
         // check if incoming new candle is next candle so the difrence
         // between times must be the same as last existing 2 candles
-        else if (candleTicker.candle.date.difference(candles[0].date) ==
-            candles[0].date.difference(candles[1].date)) {
+        else if (candleTicker.candle.date.difference(candles[0].date) == candles[0].date.difference(candles[1].date)) {
           // add new candle to list
           candles.insert(0, candleTicker.candle);
         }
@@ -141,9 +139,7 @@ class _MyAppState extends State<MyApp> {
     try {
       // load candles info
       final data = await repository.fetchCandles(
-          symbol: currentSymbol,
-          interval: currentInterval,
-          endTime: candles.last.date.millisecondsSinceEpoch);
+          symbol: currentSymbol, interval: currentInterval, endTime: candles.last.date.millisecondsSinceEpoch);
       candles.removeLast();
       setState(() {
         candles.addAll(data);
@@ -170,9 +166,7 @@ class _MyAppState extends State<MyApp> {
                 });
               },
               icon: Icon(
-                themeIsDark
-                    ? Icons.wb_sunny_sharp
-                    : Icons.nightlight_round_outlined,
+                themeIsDark ? Icons.wb_sunny_sharp : Icons.nightlight_round_outlined,
               ),
             )
           ],
@@ -190,8 +184,7 @@ class _MyAppState extends State<MyApp> {
                 onRemoveIndicator: (String indicator) {
                   setState(() {
                     indicators = [...indicators];
-                    indicators
-                        .removeWhere((element) => element.name == indicator);
+                    indicators.removeWhere((element) => element.name == indicator);
                   });
                 },
                 actions: [
@@ -203,7 +196,7 @@ class _MyAppState extends State<MyApp> {
                           return Center(
                             child: Container(
                               width: 200,
-                              color: Theme.of(context).backgroundColor,
+                              color: Theme.of(context).colorScheme.background,
                               child: Wrap(
                                 children: intervals
                                     .map((e) => Padding(
@@ -213,8 +206,7 @@ class _MyAppState extends State<MyApp> {
                                             height: 30,
                                             child: RawMaterialButton(
                                               elevation: 0,
-                                              fillColor:
-                                                  const Color(0xFF494537),
+                                              fillColor: const Color(0xFF494537),
                                               onPressed: () {
                                                 fetchCandles(currentSymbol, e);
                                                 Navigator.of(context).pop();
@@ -292,7 +284,7 @@ class _SymbolSearchModalState extends State<SymbolsSearchModal> {
         child: Container(
           width: 300,
           height: MediaQuery.of(context).size.height * 0.75,
-          color: Theme.of(context).backgroundColor.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.background.withOpacity(0.5),
           child: Column(
             children: [
               Padding(
@@ -308,9 +300,7 @@ class _SymbolSearchModalState extends State<SymbolsSearchModal> {
               Expanded(
                 child: ListView(
                   children: widget.symbols
-                      .where((element) => element
-                          .toLowerCase()
-                          .contains(symbolSearch.toLowerCase()))
+                      .where((element) => element.toLowerCase().contains(symbolSearch.toLowerCase()))
                       .map((e) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
@@ -358,16 +348,13 @@ class CustomTextField extends StatelessWidget {
           color: Color(0xFF494537),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
         ),
         border: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
         ),
       ),
       onChanged: onChanged,
